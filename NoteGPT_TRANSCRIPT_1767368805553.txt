@@ -1,0 +1,129 @@
+00:00:00
+This video was sponsored by Let's Get Rusty. In this video, I want to break an illusion. We're going to look at what actually happens when interpreted code runs, why interpreters are just normal compiled programs, and how that makes multil- language projects not only possible but inevitable. The first time I encountered a project where a compiled language was mixed with an interpreted one to build a single program, I had one question. How does that even work? Today, we are going to answer that
+
+00:00:27
+question. Hi friends, my name is George and this is core dumped. Let's start with a quick recap. We often think of a compiler as a program that takes source code and turns it into instructions the computer can understand producing an executable file. But compilers are actually designed in a much more modular way. Instead of being one big black box, the work is split across several stages. For example, the GNU compiler collection has four stages when compiling C code. The pre-processor, which removes
+
+00:01:01
+comments, resolves include directives and expands macros. The compiler, which translates the pre-processed C code into assembly code files, the assembler, which turns those assembly files into object files full of machine instructions, and the linker, which takes all those object files plus libraries and combines them into the final executable. Because of this modularity, we don't need to write everything in the same language. For example, we can write most of a project in C, write a few performance critical parts in assembly,
+
+00:01:38
+and then simply pass those files into the compiler pipeline at the appropriate stages. This modular design means each stage of the tool chain can accept inputs from completely different sources as long as the output format matches what the next stage expects. So we can mix languages entirely, say C and Rust. We can compile the Rust parts and tell the Rust compiler to generate a library, an object file or static archive instead of a standalone executable. That library can then be passed directly to the C
+
+00:02:10
+tool chains linker stage. In the end, we get a single executable that was built from multiple compiled languages. The question here is how can interpreted languages fit into a pipeline that expects object files and linkable binaries? To answer that, we need to understand what actually happens when running an interpreted language project versus a compiled language project. With compiled languages, you explicitly run a compiler to generate an executable file and then you run that executable. With interpreted languages, you usually
+
+00:02:43
+perform just one step. You call the interpreter and pass your source code file as a parameter and the project simply runs. Our first goal today is to understand what exactly happens when we call an interpreter. Let's go back to compiled programs first. When you type the name of a compiled program in the terminal and press enter, you're asking the kernel to run a file with that name. The kernel finds it on disk, loads its content into memory, and because that file contains machine instructions, the CPU can begin
+
+00:03:15
+fetching, decoding, and executing them. The kernel also allocates additional memory. That process might need the stack, the heap, and so on. At that point, our compiled program has become a process. This can't happen with interpreted languages because your code was never compiled into machine instructions. Because Python script is just text, we cannot load it into memory expecting the CPU to run it. Of course not. CPUs only understand machine code, not Python code. So when you run a command like this,
+
+00:03:50
+you're not really running your Python script. You're actually running an executable file called Python that resides somewhere in your system storage. The operating system loads that executable into memory starts executing it. And now this process we've just created is the Python interpreter, not your Python script. Once the interpreter is running, it receives your script's file name as an argument, opens the file, and reads its contents, loading it as data into its own memory space, usually the heap.
+
+00:04:21
+Note that your script never becomes a separate process. Code written in interpreted languages is not meant to become its own process. It becomes data. Data that another process will read, analyze, and execute on your behalf. API file is to the Python interpreter what AOXLSX file is to Microsoft Excel or what ANMP4 file is to VLC. These files don't run themselves. They're consumed by another program that knows what to do with them. The machine code inside the interpreter executable instructs the CPU to read
+
+00:04:56
+your script, break it down through several internal steps, and eventually transform it into data structures that represent your program. Both compilers and interpreters perform this parsing step. The difference is what they do afterward. A compiler takes that structured representation and translates it into machine instructions that will be executed later. An interpreter, on the other hand, immediately uses the CPU to perform the operations represented in that structure. If you're wondering how, well, with code
+
+00:05:32
+like this, for example, if expressions are represented as trees, as shown here, the interpreter evaluates them by first obtaining the value of the left and right sides of the operation, matching the operator symbol, performing the corresponding action, and then returning the result. Of course, expressions can be nested. A value could be operated with another expression. So the interpreter uses recursive calls to evaluate inner expressions before using their results in outer ones. This is what interpreting
+
+00:06:02
+means. Analyzing the input code and deciding what action to perform based on what we find in that code. If the interpreter sees a plus sign, it performs an addition. If it sees a minus sign, it performs a subtraction. If it sees a star symbol, it performs a multiplication and so on. In very simple words, writing an interpreter is writing code that will run other code. Now, here is perhaps the most important part of this entire video. The interpreter itself isn't magical. It's just another
+
+00:06:33
+executable sitting on your disk, which means that at some point it was compiled from source code. All the code that parses the script, evaluates expressions, handles variables, classes, types, and every other feature of the language is written in another language. a compiled language. The official Python interpreter, for instance, is written in C. NodeJS, the popular JavaScript runtime, is written in C++. So when you run Node main.js, you're not creating a JavaScript process. You're starting a C++ process that reads your
+
+00:07:10
+JavaScript and interprets it. When you run Python main.py, you're not creating a Python process. You're running a C program that reads your Python script and interprets it. And if you still don't see where this is headed, what I'm trying to say is this. In a very real sense, every interpreted language project is already a multi- language project. We just don't notice the compiled part because it comes pre-ompiled as an executable file. And speaking of multil- language projects,
+
+00:07:39
+have you noticed that more and more companies are including Rust in the development of their critical systems? That's not hype. That's happening. And if you're thinking about leveling up your Rust skills, whether for personal growth or to land a job working on real systems, Let's Get Rusty is the go-to place for Rust training. Created by a fellow YouTuber and one of the most beloved names in the Rust online community, Let's Get Rusty has helped thousands of developers, myself
+
+00:08:04
+included, by the way, master the language and break into systems programming. They're running a new cohort very soon, and since spots are limited, now's a great time to check it out. Visit let's getrusty.com/startwithjeorge or just click the link in the pinned comment below. Big thanks to let's getrusty for supporting the channel. And now back to the video. Since an interpreter is just a program written in another language, there's nothing stopping us from extending it. We could
+
+00:08:31
+simply take the interpreter's source code and add more features by writing additional code in the language the interpreter itself is written in. To make this idea clearer, let's walk through an example. Imagine we're using Rust to implement an interpreter for a Python-like language. When Python variables are created, how should the interpreter handle them? Take this line of code. A compiler would simply emit machine instructions to load the operins, perform the addition, and store the result in a specific memory
+
+00:09:00
+location. But in an interpreted language, how do we represent variables? How do we store their values? And how do we retrieve those values later when the variable is used? Like everything in programming, there are countless approaches. But one simple method is to define a type that represents the possible values a variable can hold. A variable could be a number, a string, a boolean, and in a real interpreter, it could also represent arrays, objects, classes, and more. But to keep it simple, we'll stick
+
+00:09:29
+to just these three. Now, when the interpreter receives a line of code like this one, it first parses it into a tree. During execution, the interpreter evaluates the expression just like we explained earlier. And once it has the result, it creates a new instance of the type we defined. But now the interpreter has to remember this variable for future use. To do that, it creates a collection beforehand. Here I'm using a hashmap. Once the variable is created, it stores its value in the map using its name as the key.
+
+00:10:05
+Every time a new variable is defined, the interpreter builds a new value and inserts it into this hashmap. Later, if the script uses one of those variables again, the interpreter simply looks it up in the map, retrieves its value, and uses it in whatever expression or statement requires it. At this point, you may be wondering why I'm talking about these specific implementation details, even though this isn't a video about building interpreters. Structures and collections like this are used by interpreters to represent and
+
+00:10:36
+store everything in the language, not just variables, but also functions, objects, and more. There's no fundamental reason we couldn't add more compiled code that accesses those same internal structures. For example, if the interpreter keeps track of variables by storing them in a list or a hashmap, we can write additional compiled code that exposes that collection or even inserts new values into it using the same structures the interpreter already relies on. This means we can write a performance
+
+00:11:05
+critical routine in the compiled language, access values defined in the interpreted language, extract the value from the structure, use it to compute a value, wrap the result within the structure the interpreter uses to represent values, and then insert it into the interpreter's table. Once that's done, the interpreted language can see and use that variable exactly as if it had been produced by itself. And this can be done not only with variables but with functions since the interpreter also uses a structure to
+
+00:11:34
+represent those. And that gives us the answer given two languages compiled language A and interpreted language B. Mixing both in the same project is possible because all the machinery written in A to interpret B is accessible from A. That makes it possible to write additional compiled code that creates values, registers functions, or interacts with the interpreter's data structures directly. In other words, you don't mix the interpreted language with the compiled one. You mix the compiled language with
+
+00:12:04
+the interpreter. And that's how both worlds end up working together inside the same program. That being said, let me show you a real example. Here I have the source code of a small interpreter for a tiny programming language I designed just for this video. It's nothing too complex. You can declare variables, evaluate expressions, write conditions, create simple loops, and it even has a sleep keyword that pauses execution before moving on to the next line. Very basic, but more than enough for our purposes.
+
+00:12:40
+I'm going to embed this interpreter into a larger project. So, instead of running it as a standalone program, I'm going to use it like a library that my compiled code can call into. My main program is simple. If I compile and run it, all it does is open a window of a fixed size, set the background color, here it's blue, and draw a rectangle at a specific position. This happens every frame. Now, here's my problem. If I want to change the background color or the rectangle's position, I have to edit the source
+
+00:13:09
+code, recompile the entire program, and then run it again just to see the changes. So, here's the challenge. I want these parameters to be defined in my interpreted language instead of my compiled one. If I treat the interpreter source code as a library, I should be able to read the values of variables declared in the interpreted script, meaning I won't have to recompile the project every time I want to change something. To do this, I just need to look at how the interpreter stores variables. And
+
+00:13:38
+the good news, it remembers them in a hashmap using the variable's name as the key. Exactly like the example I showed earlier. Since the interpreter is implemented in the same language as the rest of my program, there's no reason I can't access that hashmap from my main code. So, I'm going to add a bit of extra functionality that lets my interpreter expose the internal data it uses while interpreting code. In my main function, I'll spawn the interpreter and tell it to load my
+
+00:14:06
+script file. Then, I let the interpreter run the script on a separate thread so it won't block my main thread, which is busy drawing the window. The rest is actually simple. Instead of hard- coding the background color, I'll read the values of R, G, and B from the interpreter's variable table. Instead of hard- coding the position of the rectangle, I'll read the interpreter's variables X and Y. And I'll go one step further. In the section of code that handles window resizing, I'll update two variables in
+
+00:14:36
+the interpreter's hashmap, width and height. That way, if the interpreted script ever needs to know the current window size, that information is available on the interpreted side, even though the compiled code is the one managing the window. After recompiling and running the project, the square appears exactly where my interpreted code says it should be. Now, the fact that my final executable contains an embedded interpreter has two important implications. First, it means all the code required to understand this
+
+00:15:09
+interpreted language is shipped inside the executable. Because of that, I can close the program, modify my interpreted script, and run the program again to see the changes without recompiling anything. This might not sound especially impressive at first. A lot of you might be thinking why not just put the parameters in a JSON file, read the file and get the same result. Well, that brings us to the second implication because the content of the file I'm using as a config file is actually a programming language. I'm not limited to
+
+00:15:46
+just declaring variables. I can write actual code that updates those variables dynamically over time. That means I can go wild and write something like this. So when I run the program again with no recompilation, I get this. The coolest part is that if I resize the window, the interpreted code doesn't break because my compiled code keeps updating the interpreter's variables that represent the width and height every time the window changes size. Here's another example I made just by changing the interpreted script. Now the
+
+00:16:25
+background color shifts depending on the position of the rectangle relative to the center of the window. And there we have it, a multi- language project. The compiled part handles the heavy lifting like rendering the window and the interpreted part controls what happens inside that window. If this example lit up a light bulb in your head, it's because this is the core idea behind some real software like game engines. Think about God. The performance critical parts, graphics, rendering, physics, audio are written in C++, a
+
+00:17:00
+compiled language. But embedded inside the engine is an interpreter. So game developers can write code in this cool interpreted language called God do script to control things like the player's position, how strong gravity is, enemy behavior, and basically all game logic, all without ever needing to recompile the engine. If you've ever used Neovim, you might wonder how it lets you configure everything with Lua scripts. That works because Neovim embeds a Lua interpreter internally. So writing a Lua config file
+
+00:17:32
+or plugin is like giving instructions to the embedded interpreter which can change how the editor looks and behaves. That's why Neovim can look like a completely different program depending on your configuration. While calling interpreted code from a compiled language involves embedding the interpreter. Doing the opposite. Calling compiled code from an interpreted language is not achieved by embedding a compiler. A compiler translates code. It does not run it. So embedding one makes no sense in this context.
+
+00:18:04
+Instead, calling compiled code from an interpreted project is usually done through a technique known as a foreign function interface. This simply means you declare functions in the compiled language and the interpreted language is able to call them as if they were native. At this point, you already know the conceptual mechanism behind this because I've implicitly explained it throughout the video. But here's the explicit version for those of you who enjoy sticking around until the end. Just like interpreters represent
+
+00:18:33
+variables using dedicated structures, functions are also represented by their own structure. Every function is parsed into a structure like this and then added to a collection. And once again, there's no reason we couldn't manually create one of those function structures from the compiled language and insert it directly into the interpreter's function list. Once it's in the list, the interpreted script can call that function even though it was actually implemented in the compiled language.
+
+00:19:01
+Notice something important. The function structure contains a field that stores a callable. Something that receives a list of value structures and returns a new value structure. Why? Because that's exactly what calling a function in the scripting language means. You give it arguments and it returns a value. Normally, this stored callable points to the interpreter's code that evaluates the function body. But if we're manually creating the function structure from outside the interpreter, we can assign
+
+00:19:29
+that field to our own compiled function. As long as our compiled function receives a list of the interpreter's value structures and returns a value structure in the interpreter's format, the interpreter won't complain at all. The interpreted script will run it exactly like any other function. This is the same mechanism Python uses to call C functions. It's not any C function. It's a C function that receives Python's internal value structures and returns Python's value
+
+00:19:56
+structures. Finally, notice that everything I've described in this video involves adding extra code to the interpreter to expose its internals and allow it to interact with external compiled code. But this creates a problem. If the interpreter comes pre-ompiled, we can't modify it. we'd need the source code, patch in the extra functionality, and recompile the whole thing. Fortunately, designers of modern interpreters know this. They deliberately expose parts of the interpreter's internal machinery through
+
+00:20:27
+a public API, allowing external code to integrate without modifying the interpreter itself. All that is required is for our code to conform to the constraints imposed by that API. That means the interpreter you download already contains everything needed to interface with compiled code. So when we want Python to interact with C, we don't recompile Python. We only compile our C code as a dynamic library. When we run a Python script, the interpreter loads into memory and becomes a process just like we discussed
+
+00:20:57
+earlier. And when the script calls a C function, the interpreter simply asks the operating system to load the dynamic library. And now it has access to those compiled functions. And that's the simplified explanation of how Python is able to run CC code. This approach is widely used in real world applications, especially in data science and machine learning where Python relies on high performance native code to overcome the inherent limitations of being an interpreted language. Before wrapping up, I want to mention
+
+00:21:31
+that there are two other ways to mix interpreted and compiled languages. One way is by using a transpiler. You translate code from the interpreted language into a compiled language and then compile everything together as if it were a single language. This is less common, but it exists. The other way is by using separate modules that communicate at runtime via IPC like sockets or pipes. This isn't really mixing the languages. They're just separate programs talking to each other, but technically it works.
+
+00:22:06
+Finally, just a quick reminder that Code Crafters has a challenge where you build an interpreter. This month, they're giving away AirPods Pro 3 to one person who completes a challenge. So, if this video sparked your curiosity about how interpreters work, now's a great time to jump in. If you enjoyed this video or learned something new, please hit the like button. It's free and that helps me a lot. See you in the next
+
