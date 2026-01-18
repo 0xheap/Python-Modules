@@ -1,17 +1,30 @@
+"""
+This program works with 3D coordinates in a game.
+It calculates distances between points and shows how to parse coordinates.
+"""
 import math
 import sys
 
 
 def parse_coords(s: str) -> tuple:
+    """
+    Takes a string like "1,2,3" and turns it into coordinates (1, 2, 3).
+    """
     parts = s.split(",")
     return (int(parts[0]), int(parts[1]), int(parts[2]))
 
 
 def distance(p1: tuple, p2: tuple) -> float:
+    """
+    Calculates the distance between two 3D points.
+    """
     return math.sqrt((p2[0] - p1[0]) ** 2 + (p2[1] - p1[1]) ** 2 + (p2[2] - p1[2]) ** 2)
 
 
 def main():
+    """
+    Main function that demonstrates coordinate parsing and distance calculation.
+    """
     print("=== Game Coordinate System ===")
     origin = (0, 0, 0)
     default = [(10, 20, 5), (30, -42, 85)]

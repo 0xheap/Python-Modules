@@ -1,24 +1,38 @@
+"""
+This program demonstrates generators and data streaming.
+It processes game events and generates sequences like Fibonacci and prime numbers.
+"""
+
 def game_event_generator(events: list):
     """
-    Generator for a simulated stream of game events.
+    Generator that yields game events one by one from a list.
     """
     for event in events:
         yield event
 
 
 def get_hight_level(events):
+    """
+    Generator that yields only events from players at level 10 or higher.
+    """
     for event in events:
         if event["data"].get("level") >= 10:
             yield event
 
 
 def fibonacci(n):
+    """
+    Generator that creates the first n numbers in the Fibonacci sequence.
+    """
     a, b = 0, 1
     for _ in range(n):
         yield a
         a, b = b, a + b
 
 def is_prime(n):
+    """
+    Checks if a number is prime (only divisible by 1 and itself).
+    """
     if n <= 1 :
         return False
     nb = 2
@@ -29,6 +43,9 @@ def is_prime(n):
     return True
 
 def first_5_primes(n) -> list:
+    """
+    Returns a list of the first n prime numbers.
+    """
     list = []
     i = 0
     while True:
@@ -38,9 +55,10 @@ def first_5_primes(n) -> list:
             list.append(i)
         i += 1
     return list
+
 def main():
     """
-    Generator for a simulated stream of game events.
+    Main function that demonstrates generators and processes game events.
     """
     print("=== Game Data Stream Processor ===\n")
     events = [

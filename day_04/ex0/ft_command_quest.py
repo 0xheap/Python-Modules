@@ -1,3 +1,7 @@
+"""
+This program shows how to work with command line arguments.
+It prints the program name and all arguments passed to it.
+"""
 import sys
 
 print("=== Command Quest ===")

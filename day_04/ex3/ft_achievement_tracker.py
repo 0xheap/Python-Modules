@@ -1,3 +1,8 @@
+"""
+This program tracks player achievements in a game.
+It analyzes which achievements are common, rare, or unique to each player.
+"""
+
 data = {
     "alice": [
         "first_blood",
@@ -28,6 +33,9 @@ data = {
 
 
 def two() -> list:
+    """
+    Returns the first two player names from the data.
+    """
     elements = []
     i = 0
     for key in data.keys():
@@ -37,6 +45,9 @@ def two() -> list:
 
 
 def main() -> None:
+    """
+    Main function that analyzes player achievements using sets.
+    """
     print("=== Achievement Tracker System ===\n")
     for key, value in data.items():
         print(f"Player {key} achievements:", set(value))

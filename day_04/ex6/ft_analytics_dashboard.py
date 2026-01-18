@@ -1,3 +1,8 @@
+"""
+This program demonstrates list, dict, and set comprehensions.
+It analyzes game data to show different ways to process collections.
+"""
+
 data = {
     "players": {
         "alice": {
@@ -63,6 +68,9 @@ data = {
 
 
 def main() -> None:
+    """
+    Main function that demonstrates comprehensions with game analytics data.
+    """
     print("=== Game Analytics Dashboard ===\n")
 
     print("=== List Comprehension Examples ===")
